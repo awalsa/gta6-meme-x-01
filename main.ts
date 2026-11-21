@@ -21,12 +21,13 @@ mkdirSync(OUTPUT_DIR, { recursive: true });
 // copying a placeholder through and letting the gate refuse it as valid 0.
 import { readFileSync } from 'node:fs';
 const post = JSON.parse(readFileSync(join(BOT_DIR, 'POST.json'), 'utf8')) as { url?: unknown };
-if (typeof post.url !== 'string' || !post.url.startsWith('https://x.com/')) {
-  console.error('POST.json must name a real X post URL under https://x.com/');
+if (typeof post.url !== 'string' || !post.url.startsWith('https://x.com/') || !post.url.includes('/status/')) {
+  console.error('POST.json must name a real X post URL (https://x.com/<handle>/status/<id>)');
   process.exit(1);
 }
 try {
   copyFileSync(join(BOT_DIR, 'POST.json'), join(OUTPUT_DIR, 'POST.json'));
+  console.log(`Entry post: ${post.url}`);
 } catch (err) {
   console.error(`POST.json could not be copied from ${BOT_DIR}: ${(err as Error).message}`);
   process.exit(1);
